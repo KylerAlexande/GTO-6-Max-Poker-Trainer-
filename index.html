@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Range Trainer — Preflop Drills</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root {
+    --bg: #0b111c;
+    --bg-deep: #070b12;
+    --panel: #121a29;
+    --panel-2: #17203228;
+    --line: #223047;
+    --text: #e4e9f2;
+    --text-dim: #8a97ab;
+    --coral: #e2665a;
+    --mint: #55d3a0;
+    --cream: #ecdfae;
+    --gold: #d1a83f;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+  }
+
+  #app { max-width: 980px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .brand { display: flex; flex-direction: column; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    margin: 2px 0 0;
+    letter-spacing: -0.01em;
+  }
+
+  .tabs {
+    display: flex;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px;
+    gap: 2px;
+  }
+  .tab-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+  .tab-btn.active { background: var(--gold); color: #1c1406; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px;
+  }
+
+  /* ---------- DRILL VIEW ---------- */
+  .modebar { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .mode-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    background: var(--bg-deep);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    padding: 7px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .mode-btn.active { background: var(--gold); border-color: var(--gold); color: #1c1406; font-weight: 600; }
+
+  .statbar { display: flex; background: var(--bg-deep); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 18px; }
+  .stat { flex: 1; padding: 12px 14px; border-right: 1px solid var(--line); }
+  .stat:last-child { border-right: none; }
+  .stat-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
+  .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-top: 2px; }
+
+  .scenario { font-size: 15px; color: var(--text-dim); margin-bottom: 16px; line-height: 1.5; }
+  .scenario b { color: var(--text); font-weight: 600; }
+
+  .cards-row { display: flex; justify-content: center; gap: 12px; margin: 8px 0 22px; }
+  .card {
+    width: 76px; height: 106px; background: var(--cream); border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 30px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+  }
+  .card.red { color: var(--coral); }
+  .card.black { color: #1b1b18; }
+
+  .action-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .action-btn {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px;
+    padding: 12px 22px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--bg-deep); color: var(--text); cursor: pointer; min-width: 100px;
+  }
+  .action-btn:hover { border-color: var(--gold); }
+
+  .reveal { margin-top: 18px; padding-top: 18px; border-top: 1px dashed var(--line); }
+  .reveal-verdict { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 6px; }
+  .reveal-verdict.correct { color: var(--mint); }
+  .reveal-verdict.wrong { color: var(--coral); }
+  .reveal-note { color: var(--text-dim); font-size: 14px; margin-bottom: 16px; line-height: 1.5; }
+
+  .next-btn {
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px; background: var(--gold); color: #1c1406;
+    border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700;
+  }
+
+  .grid-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .grid-legend { display: flex; gap: 16px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); }
+  .legend-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .range-grid { display: grid; grid-template-columns: repeat(13, 1fr); gap: 2px; width: 100%; max-width: 480px; }
+  .cell { aspect-ratio: 1; border-radius: 3px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; display: flex; align-items: center; justify-content: center; color: rgba(0,0,0,0.55); }
+  .cell.hero-cell { outline: 2.5px solid var(--text); outline-offset: 1px; color: #1b1b18; font-weight: 700; }
+  .cell.hero-cell.correct { outline-color: var(--mint); }
+  .cell.hero-cell.wrong { outline-color: var(--coral); }
+
+  .footer-note { font-size: 12px; color: var(--text-dim); line-height: 1.6; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+
+  /* ---------- STATS VIEW ---------- */
+  .stats-grid { display: grid; grid-template-columns: 260px 1fr; gap: 18px; margin-bottom: 18px; }
+  @media (max-width: 720px) { .stats-grid { grid-template-columns: 1fr; } }
+
+  .profile-card { background: var(--bg-deep); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .badge {
+    align-self: flex-start; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; padding: 5px 10px; border-radius: 999px; background: var(--gold); color: #1c1406;
+  }
+  .profile-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; }
+  .profile-sub { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+  .confidence-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .confidence-track { height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; }
+  .confidence-fill { height: 100%; background: var(--mint); }
+
+  .overview-row { display: flex; gap: 12px; }
+  .overview-box { flex: 1; background: var(--bg-deep); border: 1px solid var(--line); border-radius: 14px; padding: 16px; text-align: center; }
+  .overview-num { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; }
+  .overview-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); margin-top: 2px; }
+
+  .breakdown-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 18px; }
+  @media (max-width: 720px) { .breakdown-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .breakdown-panel { background: var(--bg-deep); border: 1px solid var(--line); border-radius: 14px; padding: 14px 12px 10px; }
+  .breakdown-title { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .bars-row { display: flex; justify-content: space-around; align-items: flex-end; height: 140px; }
+  .bar-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; width: 32px; }
+  .bar-track { width: 20px; height: 100%; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column-reverse; background: var(--line); }
+  .bar-seg-correct { background: var(--mint); width: 100%; }
+  .bar-seg-wrong { background: var(--coral); width: 100%; }
+  .bar-name { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-dim); margin-top: 6px; text-align: center; }
+  .bar-empty { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-dim); text-align:center; width:100%; align-self:center; }
+
+  .history-section { margin-top: 20px; }
+  .history-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .history-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 14px; }
+  .history-row {
+    display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px;
+    background: var(--bg-deep); border: 1px solid var(--line); margin-bottom: 8px; font-size: 13px;
+  }
+  .history-hand {
+    font-family: 'IBM Plex Mono', monospace; font-weight: 700; background: var(--cream); color: #1b1b18;
+    padding: 3px 8px; border-radius: 6px; min-width: 40px; text-align: center;
+  }
+  .history-desc { flex: 1; color: var(--text-dim); }
+  .history-desc b { color: var(--text); }
+  .history-result { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 999px; }
+  .history-result.correct { background: rgba(85,211,160,0.15); color: var(--mint); }
+  .history-result.wrong { background: rgba(226,102,90,0.15); color: var(--coral); }
+  .empty-note { color: var(--text-dim); font-size: 13px; padding: 20px 0; text-align: center; }
+
+  @media (max-width: 480px) {
+    .card { width: 60px; height: 84px; font-size: 22px; }
+    .action-btn { min-width: 84px; padding: 10px 14px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="eyebrow">6-max cash · 100bb · Chen-formula ranges</div>
+      <h1>Range Trainer</h1>
+    </div>
+    <div class="tabs" id="view-tabs"></div>
+  </div>
+
+  <!-- DRILL VIEW -->
+  <div id="drill-view" class="panel">
+    <div class="modebar" id="modebar"></div>
+    <div class="statbar">
+      <div class="stat"><div class="stat-label">Streak</div><div class="stat-value" id="stat-streak">0</div></div>
+      <div class="stat"><div class="stat-label">Accuracy</div><div class="stat-value" id="stat-accuracy">—</div></div>
+      <div class="stat"><div class="stat-label">Seen</div><div class="stat-value" id="stat-seen">0</div></div>
+    </div>
+
+    <div class="scenario" id="scenario-text">Loading…</div>
+    <div class="cards-row" id="cards-row"></div>
+    <div class="action-row" id="action-row"></div>
+
+    <div class="reveal" id="reveal" style="display:none;">
+      <div class="reveal-verdict" id="reveal-verdict"></div>
+      <div class="reveal-note" id="reveal-note"></div>
+      <div class="grid-wrap">
+        <div class="grid-legend">
+          <span><span class="legend-swatch" style="background:#d1a83f"></span>Raise / 3-bet</span>
+          <span><span class="legend-swatch" style="background:#4f7d99"></span>Call</span>
+          <span><span class="legend-swatch" style="background:#223047"></span>Fold</span>
+        </div>
+        <div class="range-grid" id="range-grid"></div>
+      </div>
+      <div style="text-align:center; margin-top:16px;">
+        <button class="next-btn" id="next-btn">Next hand →</button>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      RFI thresholds and 3-bet/call cutoffs are simplified percentile cuts on Chen score, applied the same way
+      regardless of exact matchup. No bluff 3-bets are modeled yet — value-only for now. Progress saves automatically.
+    </div>
+  </div>
+
+  <!-- STATS VIEW -->
+  <div id="stats-view" class="panel" style="display:none;">
+    <div class="stats-grid">
+      <div class="profile-card">
+        <div class="badge" id="profile-badge">—</div>
+        <div>
+          <div class="profile-title" id="profile-title">—</div>
+          <div class="profile-sub" id="profile-sub">Drill a few hands to build your profile.</div>
+        </div>
+        <div>
+          <div class="confidence-label"><span>Sample confidence</span><span id="confidence-pct">0%</span></div>
+          <div class="confidence-track"><div class="confidence-fill" id="confidence-fill" style="width:0%;"></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="overview-row">
+          <div class="overview-box"><div class="overview-num" id="ov-total">0</div><div class="overview-label">Total drilled</div></div>
+          <div class="overview-box"><div class="overview-num" id="ov-accuracy">—</div><div class="overview-label">Accuracy</div></div>
+          <div class="overview-box"><div class="overview-num" id="ov-best">—</div><div class="overview-label">Best category</div></div>
+        </div>
+        <div class="breakdown-grid">
+          <div class="breakdown-panel"><div class="breakdown-title">By Position</div><div class="bars-row" id="bars-position"></div></div>
+          <div class="breakdown-panel"><div class="breakdown-title">By Hand Type</div><div class="bars-row" id="bars-handtype"></div></div>
+          <div class="breakdown-panel"><div class="breakdown-title">By Action</div><div class="bars-row" id="bars-action"></div></div>
+          <div class="breakdown-panel"><div class="breakdown-title">By Mode</div><div class="bars-row" id="bars-mode"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-section">
+      <div class="history-title">Hand History</div>
+      <div class="history-sub">Your most recently drilled spots.</div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  const RANKS = ['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
+  const RANK_VAL = { A:14,K:13,Q:12,J:11,T:10,9:9,8:8,7:7,6:6,5:5,4:4,3:3,2:2 };
+  const SUITS = [ { s:'♠', color:'black' }, { s:'♥', color:'red' }, { s:'♦', color:'red' }, { s:'♣', color:'black' } ];
+
+  function scoreForRank(v) {
+    if (v === 14) return 10;
+    if (v === 13) return 8;
+    if (v === 12) return 7;
+    if (v === 11) return 6;
+    return v / 2;
+  }
+  function chenScore(hi, lo, suited, isPair) {
+    if (isPair) return Math.max(scoreForRank(hi) * 2, 5);
+    let score = scoreForRank(hi);
+    if (suited) score += 2;
+    const gap = (hi - lo) - 1;
+    let gapPenalty = 0;
+    if (gap === 1) gapPenalty = -1;
+    else if (gap === 2) gapPenalty = -2;
+    else if (gap === 3) gapPenalty = -4;
+    else if (gap >= 4) gapPenalty = -5;
+    score += gapPenalty;
+    if (gap <= 1 && hi < 12) score += 1;
+    return Math.round(score * 2) / 2;
+  }
+
+  const HANDS = [];
+  for (let i = 0; i < 13; i++) {
+    for (let j = i; j < 13; j++) {
+      const hi = RANK_VAL[RANKS[i]], lo = RANK_VAL[RANKS[j]];
+      if (i === j) {
+        HANDS.push({ label: RANKS[i]+RANKS[i], hi, lo, isPair:true, suited:false, combos:6, row:i, col:j });
+      } else {
+        HANDS.push({ label: RANKS[i]+RANKS[j]+'s', hi, lo, isPair:false, suited:true, combos:4, row:i, col:j });
+        HANDS.push({ label: RANKS[i]+RANKS[j]+'o', hi, lo, isPair:false, suited:false, combos:12, row:j, col:i });
+      }
+    }
+  }
+  HANDS.forEach(h => { h.score = chenScore(h.hi, h.lo, h.suited, h.isPair); });
+  const sorted = [...HANDS].sort((a, b) => b.score - a.score);
+  let cum = 0;
+  sorted.forEach(h => { cum += h.combos; h.percentile = (cum / 1326) * 100; });
+
+  const RFI_THRESHOLD = { UTG: 15, HJ: 20, CO: 27, BTN: 45, SB: 38 };
+  const RFI_POSITIONS = ['UTG','HJ','CO','BTN','SB'];
+  const FACING_MATCHUPS = [
+    { opener:'UTG', hero:'BB' }, { opener:'HJ', hero:'BB' }, { opener:'CO', hero:'BB' },
+    { opener:'BTN', hero:'BB' }, { opener:'BTN', hero:'CO' }, { opener:'CO', hero:'BTN' },
+  ];
+  const THREEBET_CUTOFF = 7;
+  const CALL_CUTOFF = 22;
+
+  function rfiAction(position, hand) { return hand.percentile <= RFI_THRESHOLD[position] ? 'raise' : 'fold'; }
+  function facingAction(hand) {
+    if (hand.percentile <= THREEBET_CUTOFF) return '3bet';
+    if (hand.percentile <= CALL_CUTOFF) return 'call';
+    return 'fold';
+  }
+
+  const MODES = [ { key:'mixed', label:'Mixed' }, { key:'rfi', label:'Opens only' }, { key:'facing', label:'Facing an open only' } ];
+  let mode = 'mixed';
+  let activeView = 'drill';
+
+  const STORAGE_KEY = 'gto_trainer_stats_v2';
+  let stats = {};      // spaced-repetition weights, keyed by spot key
+  let history = [];     // full attempt log for stats view
+  let sessionSeen = 0, sessionCorrect = 0, streak = 0;
+
+  async function loadState() {
+    try {
+      const res = await window.storage.get(STORAGE_KEY, false);
+      if (res && res.value) {
+        const parsed = JSON.parse(res.value);
+        stats = parsed.stats || {};
+        history = parsed.history || [];
+      }
+    } catch (e) { stats = {}; history = []; }
+  }
+  let saveTimer = null;
+  function saveStateDebounced() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+      try { await window.storage.set(STORAGE_KEY, JSON.stringify({ stats, history }), false); }
+      catch (e) { /* non-critical */ }
+    }, 400);
+  }
+
+  function getWeight(key) { return stats[key] ? stats[key].weight : 3; }
+  function recordAnswer(spot, chosen, isCorrect) {
+    const key = spot.key;
+    if (!stats[key]) stats[key] = { weight: 3, seen: 0, correct: 0 };
+    stats[key].seen += 1;
+    if (isCorrect) { stats[key].correct += 1; stats[key].weight = Math.max(1, stats[key].weight - 1); }
+    else { stats[key].weight = Math.min(10, stats[key].weight + 2); }
+
+    history.unshift({
+      ts: Date.now(),
+      type: spot.type,
+      position: spot.type === 'rfi' ? spot.position : spot.hero,
+      opener: spot.type === 'facing' ? spot.opener : null,
+      hand: spot.hand.label,
+      isPair: spot.hand.isPair,
+      suited: spot.hand.suited,
+      action: chosen,
+      correct: isCorrect,
+    });
+    if (history.length > 300) history = history.slice(0, 300);
+    saveStateDebounced();
+  }
+
+  function buildPool() {
+    const pool = [];
+    if (mode === 'rfi' || mode === 'mixed') {
+      RFI_POSITIONS.forEach(pos => HANDS.forEach(h => pool.push({ type:'rfi', position:pos, hand:h, key:`rfi|${pos}|${h.label}` })));
+    }
+    if (mode === 'facing' || mode === 'mixed') {
+      FACING_MATCHUPS.forEach(m => HANDS.forEach(h => pool.push({ type:'facing', opener:m.opener, hero:m.hero, hand:h, key:`facing|${m.opener}>${m.hero}|${h.label}` })));
+    }
+    return pool;
+  }
+  function pickSpot() {
+    const pool = buildPool();
+    const weights = pool.map(p => getWeight(p.key));
+    const total = weights.reduce((a,b) => a+b, 0);
+    let r = Math.random() * total;
+    for (let i = 0; i < pool.length; i++) { r -= weights[i]; if (r <= 0) return pool[i]; }
+    return pool[pool.length - 1];
+  }
+  function randomSuitAssignment(hand) {
+    const s = SUITS[Math.floor(Math.random()*4)];
+    let s2;
+    if (hand.isPair) { do { s2 = SUITS[Math.floor(Math.random()*4)]; } while (s2.s === s.s); }
+    else if (hand.suited) { s2 = s; }
+    else { do { s2 = SUITS[Math.floor(Math.random()*4)]; } while (s2.s === s.s); }
+    return [s, s2];
+  }
+  function rankChar(v) { for (const k in RANK_VAL) if (RANK_VAL[k] === v) return k; }
+  function correctAction(spot) { return spot.type === 'rfi' ? rfiAction(spot.position, spot.hand) : facingAction(spot.hand); }
+  function labelFor(a) { return { fold:'Fold', raise:'Raise', call:'Call', '3bet':'3-Bet' }[a]; }
+
+  let current = null;
+
+  // ---------- VIEW SWITCHING ----------
+  function renderTabs() {
+    const wrap = document.getElementById('view-tabs');
+    wrap.innerHTML = '';
+    [['drill','Drill'], ['stats','Stats']].forEach(([key,label]) => {
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn' + (activeView === key ? ' active' : '');
+      btn.textContent = label;
+      btn.onclick = () => { activeView = key; showView(); };
+      wrap.appendChild(btn);
+    });
+  }
+  function showView() {
+    renderTabs();
+    document.getElementById('drill-view').style.display = activeView === 'drill' ? 'block' : 'none';
+    document.getElementById('stats-view').style.display = activeView === 'stats' ? 'block' : 'none';
+    if (activeView === 'stats') renderStatsView();
+  }
+
+  // ---------- DRILL VIEW ----------
+  function renderModebar() {
+    const bar = document.getElementById('modebar');
+    bar.innerHTML = '';
+    MODES.forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = 'mode-btn' + (m.key === mode ? ' active' : '');
+      btn.textContent = m.label;
+      btn.onclick = () => { mode = m.key; renderModebar(); nextHand(); };
+      bar.appendChild(btn);
+    });
+  }
+  function renderStats() {
+    document.getElementById('stat-streak').textContent = streak;
+    document.getElementById('stat-seen').textContent = sessionSeen;
+    document.getElementById('stat-accuracy').textContent = sessionSeen ? Math.round((sessionCorrect/sessionSeen)*100) + '%' : '—';
+  }
+  function renderScenario(spot, suitPair) {
+    const cardsRow = document.getElementById('cards-row');
+    cardsRow.innerHTML = '';
+    const r1 = rankChar(spot.hand.hi), r2 = rankChar(spot.hand.lo);
+    [[r1, suitPair[0]], [r2, suitPair[1]]].forEach(([rank, suit]) => {
+      const div = document.createElement('div');
+      div.className = 'card ' + suit.color;
+      div.innerHTML = rank + '<span style="font-size:22px;margin-top:2px;">' + suit.s + '</span>';
+      cardsRow.appendChild(div);
+    });
+    const scenarioEl = document.getElementById('scenario-text');
+    scenarioEl.innerHTML = spot.type === 'rfi'
+      ? `It folds to you in <b>${spot.position}</b>. What's your action?`
+      : `<b>${spot.opener}</b> opens, action is on you in the <b>${spot.hero}</b>. What's your action?`;
+  }
+  function renderActions(spot) {
+    const row = document.getElementById('action-row');
+    row.innerHTML = '';
+    const opts = spot.type === 'rfi' ? ['fold','raise'] : ['fold','call','3bet'];
+    opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'action-btn';
+      btn.textContent = labelFor(opt);
+      btn.onclick = () => submitAnswer(spot, opt);
+      row.appendChild(btn);
+    });
+  }
+  function submitAnswer(spot, chosen) {
+    const correct = correctAction(spot);
+    const isCorrect = chosen === correct;
+    sessionSeen += 1;
+    if (isCorrect) { sessionCorrect += 1; streak += 1; } else { streak = 0; }
+    recordAnswer(spot, chosen, isCorrect);
+    renderStats();
+    showReveal(spot, chosen, correct, isCorrect);
+  }
+  function showReveal(spot, chosen, correct, isCorrect) {
+    document.getElementById('action-row').style.display = 'none';
+    const reveal = document.getElementById('reveal');
+    reveal.style.display = 'block';
+    const verdict = document.getElementById('reveal-verdict');
+    verdict.textContent = isCorrect ? 'Correct' : 'Off — correct play is ' + labelFor(correct);
+    verdict.className = 'reveal-verdict ' + (isCorrect ? 'correct' : 'wrong');
+    const note = document.getElementById('reveal-note');
+    note.textContent = spot.type === 'rfi'
+      ? `${spot.hand.label} sits at the ${spot.hand.percentile.toFixed(1)} percentile of hand strength. ${spot.position} opens roughly the top ${RFI_THRESHOLD[spot.position]}% here.`
+      : `${spot.hand.label} sits at the ${spot.hand.percentile.toFixed(1)} percentile of hand strength. Value 3-bet cutoff is top ${THREEBET_CUTOFF}%, call extends to top ${CALL_CUTOFF}% (simplified, no bluffs modeled).`;
+    renderRangeGrid(spot, isCorrect);
+  }
+  function renderRangeGrid(spot, isCorrect) {
+    const grid = document.getElementById('range-grid');
+    grid.innerHTML = '';
+    for (let i = 0; i < 13; i++) {
+      for (let j = 0; j < 13; j++) {
+        const h = HANDS.find(x => x.row === i && x.col === j);
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        const action = spot.type === 'rfi' ? rfiAction(spot.position, h) : facingAction(h);
+        let bg = '#223047';
+        if (action === 'raise' || action === '3bet') bg = '#d1a83f';
+        else if (action === 'call') bg = '#4f7d99';
+        cell.style.background = bg;
+        cell.textContent = h.label.replace(/[so]$/, '');
+        if (h.label === spot.hand.label) cell.classList.add('hero-cell', isCorrect ? 'correct' : 'wrong');
+        grid.appendChild(cell);
+      }
+    }
+  }
+  function nextHand() {
+    current = pickSpot();
+    document.getElementById('reveal').style.display = 'none';
+    document.getElementById('action-row').style.display = 'flex';
+    const suitPair = randomSuitAssignment(current.hand);
+    renderScenario(current, suitPair);
+    renderActions(current);
+  }
+
+  // ---------- STATS VIEW ----------
+  function computeGroup(keyFn) {
+    const groups = {};
+    history.forEach(h => {
+      const k = keyFn(h);
+      if (k === null) return;
+      if (!groups[k]) groups[k] = { correct: 0, total: 0 };
+      groups[k].total += 1;
+      if (h.correct) groups[k].correct += 1;
+    });
+    return groups;
+  }
+  function renderBars(containerId, groups, order) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = '';
+    const keys = order || Object.keys(groups);
+    const anyData = keys.some(k => groups[k] && groups[k].total > 0);
+    if (!anyData) { el.innerHTML = '<div class="bar-empty">Drill a few hands to see this</div>'; return; }
+    keys.forEach(k => {
+      const g = groups[k] || { correct: 0, total: 0 };
+      const col = document.createElement('div');
+      col.className = 'bar-col';
+      const track = document.createElement('div');
+      track.className = 'bar-track';
+      if (g.total > 0) {
+        const correctPct = (g.correct / g.total) * 100;
+        const wrongPct = 100 - correctPct;
+        const segC = document.createElement('div');
+        segC.className = 'bar-seg-correct';
+        segC.style.height = correctPct + '%';
+        const segW = document.createElement('div');
+        segW.className = 'bar-seg-wrong';
+        segW.style.height = wrongPct + '%';
+        track.appendChild(segC);
+        track.appendChild(segW);
+      }
+      const name = document.createElement('div');
+      name.className = 'bar-name';
+      name.textContent = k;
+      col.appendChild(track);
+      col.appendChild(name);
+      el.appendChild(col);
+    });
+  }
+  function renderStatsView() {
+    const total = history.length;
+    const correctTotal = history.filter(h => h.correct).length;
+    const accuracy = total ? Math.round((correctTotal/total)*100) : null;
+
+    document.getElementById('ov-total').textContent = total;
+    document.getElementById('ov-accuracy').textContent = accuracy !== null ? accuracy + '%' : '—';
+
+    const confidence = Math.min(100, Math.round((total / 150) * 100));
+    document.getElementById('confidence-pct').textContent = confidence + '%';
+    document.getElementById('confidence-fill').style.width = confidence + '%';
+
+    // Position groups
+    const posGroups = computeGroup(h => h.position);
+    const posOrder = ['UTG','HJ','CO','BTN','SB','BB'];
+    renderBars('bars-position', posGroups, posOrder);
+
+    // Hand type groups
+    const typeGroups = computeGroup(h => h.isPair ? 'Pairs' : (h.suited ? 'Suited' : 'Offsuit'));
+    renderBars('bars-handtype', typeGroups, ['Pairs','Suited','Offsuit']);
+
+    // Action groups
+    const actionGroups = computeGroup(h => labelFor(h.action));
+    renderBars('bars-action', actionGroups, ['Fold','Call','Raise','3-Bet']);
+
+    // Mode groups
+    const modeGroups = computeGroup(h => h.type === 'rfi' ? 'Opens' : 'Facing');
+    renderBars('bars-mode', modeGroups, ['Opens','Facing']);
+
+    // Best category
+    let best = null, bestAcc = -1;
+    Object.keys(posGroups).forEach(k => {
+      const g = posGroups[k];
+      if (g.total >= 5) {
+        const acc = g.correct / g.total;
+        if (acc > bestAcc) { bestAcc = acc; best = k; }
+      }
+    });
+    document.getElementById('ov-best').textContent = best ? best : '—';
+
+    // Profile badge
+    let badge, title, sub;
+    if (total < 10) {
+      badge = 'WARMING UP'; title = 'Not enough data yet';
+      sub = 'Drill at least 10 hands to unlock your training profile.';
+    } else if (accuracy >= 80) {
+      badge = 'SHARP'; title = 'Sharp & Disciplined';
+      sub = `${accuracy}% accuracy across ${total} spots. Ranges are sticking — consider tightening the thresholds or adding bluff 3-bets to keep it challenging.`;
+    } else if (accuracy >= 60) {
+      badge = 'SOLID'; title = 'Solid, With Leaks';
+      sub = `${accuracy}% accuracy across ${total} spots. Check the weakest bar below — that's where the reps should go next.`;
+    } else if (accuracy >= 40) {
+      badge = 'LEAKY'; title = 'Leaking Chips';
+      sub = `${accuracy}% accuracy across ${total} spots. Worth slowing down and reviewing the range grid on misses instead of guessing fast.`;
+    } else {
+      badge = 'TILTING'; title = 'Rough Session';
+      sub = `${accuracy}% accuracy across ${total} spots. Everyone has these — consider switching to "Opens only" mode to rebuild footing.`;
+    }
+    document.getElementById('profile-badge').textContent = badge;
+    document.getElementById('profile-title').textContent = title;
+    document.getElementById('profile-sub').textContent = sub;
+
+    // History list
+    const listEl = document.getElementById('history-list');
+    listEl.innerHTML = '';
+    if (!history.length) {
+      listEl.innerHTML = '<div class="empty-note">No hands drilled yet — head to the Drill tab to get started.</div>';
+    } else {
+      history.slice(0, 15).forEach(h => {
+        const row = document.createElement('div');
+        row.className = 'history-row';
+        const handEl = document.createElement('div');
+        handEl.className = 'history-hand';
+        handEl.textContent = h.hand;
+        const desc = document.createElement('div');
+        desc.className = 'history-desc';
+        desc.innerHTML = h.type === 'rfi'
+          ? `Folds to <b>${h.position}</b> — you chose <b>${labelFor(h.action)}</b>`
+          : `<b>${h.opener}</b> opens vs <b>${h.position}</b> — you chose <b>${labelFor(h.action)}</b>`;
+        const result = document.createElement('div');
+        result.className = 'history-result ' + (h.correct ? 'correct' : 'wrong');
+        result.textContent = h.correct ? 'Correct' : 'Missed';
+        row.appendChild(handEl);
+        row.appendChild(desc);
+        row.appendChild(result);
+        listEl.appendChild(row);
+      });
+    }
+  }
+
+  document.getElementById('next-btn').addEventListener('click', nextHand);
+
+  loadState().then(() => {
+    showView();
+    renderModebar();
+    renderStats();
+    nextHand();
+  });
+})();
+</script>
+</body>
+</html>
