@@ -30,9 +30,7 @@ your accuracy over time by position, hand type, and action.
   UTG open and a BTN open are treated the same when deciding whether to
   call/3-bet/fold. Real ranges should be tighter facing an earlier position.
 - Only 6-max cash, 100bb is modeled — no full ring, no tournament stack depths.
-- `window.storage` (used for persistence) is a Claude Artifacts feature. If you
-  host this on GitHub Pages outside of Claude, replace those calls with
-  `localStorage` or a small backend if you want progress to persist.
+
 
 ## Running locally
 
