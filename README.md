@@ -4,9 +4,6 @@ A single-file, no-dependency preflop poker trainer. Drills opening ranges (RFI)
 and facing-an-open decisions (fold / call / 3-bet) for 6-max cash, then tracks
 your accuracy over time by position, hand type, and action.
 
-Live version: enable GitHub Pages on this repo (see below) and it'll be hosted
-at `https://<your-username>.github.io/<repo-name>/`.
-
 ## How it works
 
 - **Ranges**: generated from the [Chen Formula](https://en.wikipedia.org/wiki/Chen_Formula),
