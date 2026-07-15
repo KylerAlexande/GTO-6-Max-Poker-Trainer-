@@ -48,14 +48,6 @@ python3 -m http.server 8000
 # then visit http://localhost:8000
 ```
 
-## Publishing to GitHub Pages
-
-1. Push this repo to GitHub (see the commands below).
-2. On GitHub, go to **Settings → Pages**.
-3. Under **Build and deployment**, set source to **Deploy from a branch**,
-   branch `main`, folder `/ (root)`.
-4. Save. Your trainer will be live at `https://<username>.github.io/<repo>/`
-   within a minute or two.
 
 ## License
 
