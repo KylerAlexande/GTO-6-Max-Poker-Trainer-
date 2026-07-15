@@ -4,6 +4,8 @@ A single-file, no-dependency preflop poker trainer. Drills opening ranges (RFI)
 and facing-an-open decisions (fold / call / 3-bet) for 6-max cash, then tracks
 your accuracy over time by position, hand type, and action.
 
+https://kyleralexande.github.io/GTO-6-Max-Poker-Trainer-/
+
 ## How it works
 
 - **Ranges**: generated from the [Chen Formula](https://en.wikipedia.org/wiki/Chen_Formula),
